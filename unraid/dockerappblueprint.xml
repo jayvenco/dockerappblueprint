@@ -11,14 +11,14 @@
   <Project>https://github.com/jayvenco/dockerappblueprint</Project>
   <Overview>Wizard that asks step by step what a new Docker app should be and generates a ready-to-paste build prompt for Claude Code or OpenAI Codex, including Unraid template rules, GitHub repo setup and documentation rules. Includes an OpenAI logo generator and a REST API for Hermes Agent. Default login after first start: admin / admin (you must change it immediately).</Overview>
   <Category>Tools: Productivity:</Category>
-  <WebUI>http://[IP]:[PORT:8000]/</WebUI>
+  <WebUI>http://[IP]:[PORT:7773]/</WebUI>
   <TemplateURL>https://raw.githubusercontent.com/jayvenco/dockerappblueprint/main/unraid/dockerappblueprint.xml</TemplateURL>
   <Icon>https://raw.githubusercontent.com/jayvenco/dockerappblueprint/main/unraid/icon.png</Icon>
   <ExtraParams>--restart=unless-stopped</ExtraParams>
   <PostArgs/>
   <CPUset/>
   <DateInstalled/>
-  <Config Name="WebUI port" Target="8000" Default="8834" Mode="tcp" Description="Port for the web interface (always 8000 inside the container)." Type="Port" Display="always" Required="true" Mask="false">8834</Config>
+  <Config Name="Which port should the WebUI use on Unraid?" Target="7773" Default="7773" Mode="tcp" Description="Port on your Unraid server for the web interface. Pick any free port (default 7773). Inside the container the app always listens on 7773." Type="Port" Display="always" Required="true" Mask="false">7773</Config>
   <Config Name="Data (database, backups, logos, secret key)" Target="/app/data" Default="/mnt/user/appdata/dockerappblueprint/data" Mode="rw" Description="SQLite database, automatic backups (backup/ folder), generated logos and the session key. Keep it on the array or cache so updates never lose data." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/dockerappblueprint/data</Config>
   <Config Name="TZ" Target="TZ" Default="Europe/Amsterdam" Mode="" Description="Timezone, used for backup times and logs." Type="Variable" Display="advanced" Required="false" Mask="false">Europe/Amsterdam</Config>
   <Config Name="PUID" Target="PUID" Default="99" Mode="" Description="User ID the app runs as (Unraid: 99 = nobody)." Type="Variable" Display="advanced" Required="false" Mask="false">99</Config>

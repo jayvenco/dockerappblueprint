@@ -1,6 +1,6 @@
 # DockerAppBlueprint — API handbook for agents (Hermes Agent)
 
-Base URL: `http://<unraid-ip>:8834/api/v1` · All requests and responses are JSON. Full route list with fields: `GET /api/openapi.json`.
+Base URL: `http://<unraid-ip>:7773/api/v1` · All requests and responses are JSON. Full route list with fields: `GET /api/openapi.json`.
 
 ## Authentication
 Create a token in the app under **Settings → API tokens** (shown once). Send it on every request:
@@ -66,7 +66,7 @@ Token, key and backup management is deliberately **not** available through the A
 
 ## Example
 ```bash
-curl -s -X POST http://<unraid-ip>:8834/api/v1/generate \
+curl -s -X POST http://<unraid-ip>:7773/api/v1/generate \
   -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
   -d '{"spec": {"app_name": "Recipe Vault", "purpose": "Store and search family recipes with photos and tags.", "staging": true}}'
 ```

@@ -38,8 +38,8 @@ English UI and docs · lightweight single container · SQLite by default (other 
 
 ### Unraid (template)
 1. Copy `unraid/dockerappblueprint.xml` to `/boot/config/plugins/dockerMan/templates-user/` (or install with the script below).
-2. Docker tab → **Add Container** → pick the `dockerappblueprint` template → Apply.
-3. Open `http://<unraid-ip>:8834/`, sign in with `admin` / `admin` and set a new password.
+2. Docker tab → **Add Container** → pick the `dockerappblueprint` template. It asks **which port the WebUI should use on Unraid** (default 7773) → Apply.
+3. Open `http://<unraid-ip>:<port>/` (default port 7773), sign in with `admin` / `admin` and set a new password.
 
 Data lives in `/mnt/user/appdata/dockerappblueprint/data` (database, `backup/`, logos, session key).
 
@@ -47,17 +47,17 @@ Data lives in `/mnt/user/appdata/dockerappblueprint/data` (database, `backup/`, 
 ```bash
 bash scripts/install-unraid.sh
 ```
-The image is published by GitHub Actions as `ghcr.io/jayvenco/dockerappblueprint:latest` (set the package to **Public** after the first build, or pass `GHCR_USER`/`GHCR_TOKEN`). The script pulls it, creates the container with Unraid labels and writes the template. Variables: `HOST_PORT`, `APPDATA`, `IMAGE_TAG`, `CONTAINER_NAME`.
+The image is published by GitHub Actions as `ghcr.io/jayvenco/dockerappblueprint:latest` (set the package to **Public** after the first build, or pass `GHCR_USER`/`GHCR_TOKEN`). The script asks which port to use (default 7773), pulls the image, creates the container with Unraid labels and writes the template. Variables: `HOST_PORT` (skips the question), `APPDATA`, `CONTAINER_NAME`.
 
 ### docker compose
 ```bash
 docker compose up --build
 ```
-Open http://localhost:8834. Data is stored in `./data`.
+Open http://localhost:7773. Data is stored in `./data`.
 
 ### docker run
 ```bash
-docker run -d --name dockerappblueprint -p 8834:8000 \
+docker run -d --name dockerappblueprint -p 7773:7773 \
   -v /mnt/user/appdata/dockerappblueprint/data:/app/data \
   -e TZ=Europe/Amsterdam --restart unless-stopped \
   ghcr.io/jayvenco/dockerappblueprint:latest
@@ -65,9 +65,6 @@ docker run -d --name dockerappblueprint -p 8834:8000 \
 
 ## Updating
 Unraid: Docker tab → *Check for updates* / *force update* (or run the install script again). Data stays in the volume.
-
-## Staging and production
-`develop` publishes `:staging`, `main` publishes `:latest`. Staging has its own template (`unraid/dockerappblueprint-staging.xml`, port 8934, appdata `dockerappblueprint-staging`). Install it with `CONTAINER_NAME=dockerappblueprint-staging IMAGE_TAG=staging HOST_PORT=8934 bash scripts/install-unraid.sh`. Promote by merging `develop` into `main` after approval.
 
 ## Configuration
 Everything works without configuration. Optional environment variables:
@@ -92,7 +89,7 @@ Create a token under Settings → API tokens and call `/api/v1` with `Authorizat
 ## Development
 ```bash
 python3.12 -m venv .venv && ./.venv/bin/pip install -r requirements-dev.txt
-./.venv/bin/uvicorn app.main:app --reload      # http://localhost:8000
+./.venv/bin/uvicorn app.main:app --reload --port 7773   # http://localhost:7773
 ./.venv/bin/python -m pytest -q                # tests
 ```
 

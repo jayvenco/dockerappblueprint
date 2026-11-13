@@ -5,23 +5,31 @@
 # writes a user template so "Edit" in the Docker tab works. Running it again = update; your data
 # in <appdata>/data is kept.
 #
-# Override with environment variables, e.g.:  HOST_PORT=9000 bash install-unraid.sh
-#   Staging:  CONTAINER_NAME=dockerappblueprint-staging IMAGE_TAG=staging HOST_PORT=8934 bash install-unraid.sh
+# Asks which port to use (default 7773). Override with environment variables, e.g.:  HOST_PORT=9000 bash install-unraid.sh
 set -euo pipefail
 
 NAME="${CONTAINER_NAME:-dockerappblueprint}"
 IMAGE="${IMAGE:-ghcr.io/jayvenco/dockerappblueprint}"
 TAG="${IMAGE_TAG:-latest}"
-HOST_PORT="${HOST_PORT:-8834}"
-CONTAINER_PORT=8000
+CONTAINER_PORT=7773
+DEFAULT_PORT=7773
 APPDATA="${APPDATA:-/mnt/user/appdata/${NAME}}"
-BRANCH="main"; [ "${TAG}" = "staging" ] && BRANCH="develop"
-RAW="${RAW_URL:-https://raw.githubusercontent.com/jayvenco/dockerappblueprint/${BRANCH}/unraid}"
-TEMPLATE_FILE="dockerappblueprint.xml"; [ "${TAG}" = "staging" ] && TEMPLATE_FILE="dockerappblueprint-staging.xml"
+RAW="${RAW_URL:-https://raw.githubusercontent.com/jayvenco/dockerappblueprint/main/unraid}"
+TEMPLATE_FILE="dockerappblueprint.xml"
 TEMPLATE_DIR="${TEMPLATE_DIR:-/boot/config/plugins/dockerMan/templates-user}"
 # Optional app settings. If they are already set on the existing container they are carried over on
 # update; a value you pass here wins.
 OPTIONAL_VARS="TZ PUID PGID OPENAI_API_KEY DEFAULT_THEME BACKUP_ENABLED BACKUP_KEEP COOKIE_SECURE"
+
+# Ask which port to use on Unraid (skipped when HOST_PORT is set or when not run in a terminal).
+if [ -z "${HOST_PORT:-}" ]; then
+  HOST_PORT="${DEFAULT_PORT}"
+  if [ -t 0 ]; then
+    read -r -p "Which port should the WebUI use on Unraid? [${DEFAULT_PORT}] " answer || true
+    HOST_PORT="${answer:-${DEFAULT_PORT}}"
+  fi
+fi
+case "${HOST_PORT}" in ''|*[!0-9]*) echo "Invalid port: ${HOST_PORT}" >&2; exit 1 ;; esac
 
 log() { printf '==> %s\n' "$*"; }
 
@@ -84,9 +92,13 @@ if [ -d "${TEMPLATE_DIR}" ]; then
   TMP="$(mktemp)"
   if command -v curl >/dev/null 2>&1 && curl -fsSL "${RAW}/${TEMPLATE_FILE}" -o "${TMP}"; then
     esc() { printf '%s' "$1" | sed -e 's/&/\&amp;/g' -e 's/</\&lt;/g' -e 's/>/\&gt;/g' -e 's/[\\&|]/\\&/g'; }
-    setcfg() { sed -i -E "s|(Target=\"$1\"[^>]*>)[^<]*(</Config>)|\1$(esc "$2")\2|" "${TMP}"; }
-    sed -i -E "s|<Name>[^<]*</Name>|<Name>$(esc "${NAME}")</Name>|" "${TMP}"
-    setcfg "8000" "${HOST_PORT}"
+    # The value goes in via a placeholder so a value starting with a digit cannot merge with \1.
+    setcfg() {
+      sed -i.bak -E "s|(Target=\"$1\"[^>]*>)[^<]*(</Config>)|\1@@VALUE@@\2|" "${TMP}"
+      sed -i.bak "s|@@VALUE@@|$(esc "$2")|" "${TMP}"
+    }
+    sed -i.bak -E "s|<Name>[^<]*</Name>|<Name>$(esc "${NAME}")</Name>|" "${TMP}"
+    setcfg "7773" "${HOST_PORT}"
     setcfg "/app/data" "${APPDATA}/data"
     for v in ${OPTIONAL_VARS}; do
       [ -n "${!v:-}" ] && setcfg "${v}" "${!v}"
@@ -95,7 +107,7 @@ if [ -d "${TEMPLATE_DIR}" ]; then
   else
     echo "Warning: could not download the template; skipping (the container still works)." >&2
   fi
-  rm -f "${TMP}"
+  rm -f "${TMP}" "${TMP}.bak"
 else
   log "No dockerMan folder found (not Unraid?); template skipped"
 fi

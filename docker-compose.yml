@@ -4,7 +4,7 @@ services:
     image: ghcr.io/jayvenco/dockerappblueprint:latest
     container_name: dockerappblueprint
     ports:
-      - "8834:8000"
+      - "7773:7773"
     volumes:
       - ./data:/app/data
     environment:

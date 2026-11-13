@@ -15,8 +15,8 @@ Self-hosted wizard that generates build prompts (and `CLAUDE.md`/`AGENTS.md`) fo
 - Default login `admin`/`admin` with forced change; never weaken that.
 - Token (Bearer) endpoints live in `routers/api.py`; anything that manages tokens, keys or backups stays cookie-only in `routers/ui.py`.
 - Update README, CHANGELOG, `AGENT_API.md` and screenshots with every user-visible change.
-- Branches: `develop` (staging, image `:staging`) and `main` (production, `:latest`). Push to `develop`, ask the owner to approve, then promote to `main`.
+- Single release flow: everything goes to `main`; the workflow publishes `:latest`. No staging for this app.
 
 ## Commands
-- Run: `docker compose up --build` (http://localhost:8834) or `./.venv/bin/uvicorn app.main:app --reload`
+- Run: `docker compose up --build` (http://localhost:7773) or `./.venv/bin/uvicorn app.main:app --reload --port 7773`
 - Tests: `./.venv/bin/python -m pytest -q`

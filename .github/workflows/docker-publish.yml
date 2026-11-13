@@ -2,7 +2,7 @@ name: Publish Docker image
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main]
     tags: ["v*"]
   workflow_dispatch:
 
@@ -31,13 +31,12 @@ jobs:
       - name: Work out image tags
         id: tags
         run: |
-          # develop -> :staging, main -> :latest, v* tag -> :vX.Y.Z (+ :latest)
+          # main -> :latest, v* tag -> :vX.Y.Z (+ :latest)
           TAGS="${IMAGE}:${GITHUB_SHA}"
           case "${GITHUB_REF}" in
             refs/heads/main)    TAGS="${TAGS},${IMAGE}:latest" ;;
-            refs/heads/develop) TAGS="${TAGS},${IMAGE}:staging" ;;
             refs/tags/v*)       TAGS="${TAGS},${IMAGE}:${GITHUB_REF_NAME},${IMAGE}:latest" ;;
-            *)                  TAGS="${TAGS},${IMAGE}:staging" ;;
+            *)                  ;;
           esac
           echo "tags=${TAGS}" >> "$GITHUB_OUTPUT"
       - uses: docker/setup-buildx-action@v3
