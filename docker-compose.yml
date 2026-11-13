@@ -1,0 +1,16 @@
+services:
+  dockerappblueprint:
+    build: .
+    image: ghcr.io/jayvenco/dockerappblueprint:latest
+    container_name: dockerappblueprint
+    ports:
+      - "8834:8000"
+    volumes:
+      - ./data:/app/data
+    environment:
+      TZ: Europe/Amsterdam
+      PUID: "99"
+      PGID: "100"
+      # OPENAI_API_KEY: ""      # logo generator (or set it in Settings)
+      # DEFAULT_THEME: "midnight"
+    restart: unless-stopped

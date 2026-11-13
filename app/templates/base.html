@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en" data-theme="{{ theme }}" data-font="{{ font }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{% block title %}{{ app_name }}{% endblock %}</title>
+<link rel="icon" href="/static/images/icon.png">
+<link rel="stylesheet" href="/static/css/app.css">
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="brand" href="/"><img src="/static/images/icon.png" width="28" height="28" alt=""><span>{{ app_name }}</span></a>
+  {% if user %}
+  <nav class="nav" aria-label="Main">
+    <a href="/" class="{{ 'on' if active == 'home' }}">Prompts</a>
+    <a href="/wizard" class="{{ 'on' if active == 'wizard' }}">New prompt</a>
+    <a href="/settings" class="{{ 'on' if active == 'settings' }}">Settings</a>
+    <a href="/api/docs" class="{{ 'on' if active == 'docs' }}">API</a>
+  </nav>
+  {% else %}<div class="nav"></div>{% endif %}
+  <div class="tools">
+    <label class="muted small" for="theme-sel" hidden>Theme</label>
+    <select id="theme-sel" aria-label="Theme" data-appearance="theme">
+      {% for k, v in THEMES.items() %}<option value="{{ k }}" {{ 'selected' if k == theme }}>{{ v }}</option>{% endfor %}
+    </select>
+    <select id="font-sel" aria-label="Font" data-appearance="font">
+      {% for k, v in FONTS.items() %}<option value="{{ k }}" {{ 'selected' if k == font }}>{{ v[0] }}</option>{% endfor %}
+    </select>
+    {% if user %}<form method="post" action="/logout"><button class="btn ghost sm" type="submit">Sign out</button></form>{% endif %}
+  </div>
+</div></header>
+<main class="wrap">{% block body %}{% endblock %}</main>
+<div class="wrap footer">{{ app_name }} v{{ app_version }}</div>
+<script src="/static/js/app.js"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

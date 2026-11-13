@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>dockerappblueprint-staging</Name>
+  <Repository>ghcr.io/jayvenco/dockerappblueprint:staging</Repository>
+  <Registry>https://github.com/jayvenco/dockerappblueprint/pkgs/container/dockerappblueprint</Registry>
+  <Network>bridge</Network>
+  <MyIP/>
+  <Shell>sh</Shell>
+  <Privileged>false</Privileged>
+  <Support>https://github.com/jayvenco/dockerappblueprint/issues</Support>
+  <Project>https://github.com/jayvenco/dockerappblueprint</Project>
+  <Overview>STAGING build for testing before production. Wizard that asks step by step what a new Docker app should be and generates a ready-to-paste build prompt for Claude Code or OpenAI Codex, including Unraid template rules, GitHub repo setup and documentation rules. Includes an OpenAI logo generator and a REST API for Hermes Agent. Default login after first start: admin / admin (you must change it immediately).</Overview>
+  <Category>Tools: Productivity:</Category>
+  <WebUI>http://[IP]:[PORT:8000]/</WebUI>
+  <TemplateURL>https://raw.githubusercontent.com/jayvenco/dockerappblueprint/develop/unraid/dockerappblueprint-staging.xml</TemplateURL>
+  <Icon>https://raw.githubusercontent.com/jayvenco/dockerappblueprint/develop/unraid/icon.png</Icon>
+  <ExtraParams>--restart=unless-stopped</ExtraParams>
+  <PostArgs/>
+  <CPUset/>
+  <DateInstalled/>
+  <Config Name="WebUI port" Target="8000" Default="8934" Mode="tcp" Description="Port for the web interface (always 8000 inside the container)." Type="Port" Display="always" Required="true" Mask="false">8934</Config>
+  <Config Name="Data (database, backups, logos, secret key)" Target="/app/data" Default="/mnt/user/appdata/dockerappblueprint-staging/data" Mode="rw" Description="SQLite database, automatic backups (backup/ folder), generated logos and the session key. Keep it on the array or cache so updates never lose data." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/dockerappblueprint-staging/data</Config>
+  <Config Name="TZ" Target="TZ" Default="Europe/Amsterdam" Mode="" Description="Timezone, used for backup times and logs." Type="Variable" Display="advanced" Required="false" Mask="false">Europe/Amsterdam</Config>
+  <Config Name="PUID" Target="PUID" Default="99" Mode="" Description="User ID the app runs as (Unraid: 99 = nobody)." Type="Variable" Display="advanced" Required="false" Mask="false">99</Config>
+  <Config Name="PGID" Target="PGID" Default="100" Mode="" Description="Group ID the app runs as (Unraid: 100 = users)." Type="Variable" Display="advanced" Required="false" Mask="false">100</Config>
+  <Config Name="OPENAI_API_KEY" Target="OPENAI_API_KEY" Default="" Mode="" Description="Optional: OpenAI key for the logo generator. Can also be entered in Settings (stored encrypted)." Type="Variable" Display="advanced" Required="false" Mask="true"></Config>
+  <Config Name="DEFAULT_THEME" Target="DEFAULT_THEME" Default="" Mode="" Description="Optional: theme for a fresh install (daylight, midnight, nord, sand, forest)." Type="Variable" Display="advanced" Required="false" Mask="false"></Config>
+  <Config Name="BACKUP_ENABLED" Target="BACKUP_ENABLED" Default="" Mode="" Description="Optional: automatic backups on or off for a fresh install (true/false). Changeable in Settings." Type="Variable" Display="advanced" Required="false" Mask="false"></Config>
+  <Config Name="BACKUP_KEEP" Target="BACKUP_KEEP" Default="" Mode="" Description="Optional: number of backups to keep on a fresh install. Changeable in Settings." Type="Variable" Display="advanced" Required="false" Mask="false"></Config>
+  <Config Name="COOKIE_SECURE" Target="COOKIE_SECURE" Default="" Mode="" Description="Optional: true forces Secure cookies (only when you always use HTTPS through a reverse proxy)." Type="Variable" Display="advanced" Required="false" Mask="false"></Config>
+</Container>

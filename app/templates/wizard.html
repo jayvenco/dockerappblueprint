@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}New prompt · {{ app_name }}{% endblock %}
+{% block body %}
+<section class="hero"><h1>{{ 'Edit prompt' if editing else 'New prompt' }}</h1></section>
+<div id="progress" class="progress" aria-hidden="true"></div>
+<div id="wizard" class="card" aria-live="polite"></div>
+<div id="wizard-actions" class="sticky-actions row between">
+  <button class="btn ghost" id="btn-back" type="button">Back</button>
+  <button class="btn" id="btn-next" type="button">Next</button>
+</div>
+<script type="application/json" id="wizard-init">{{ {"initial": initial, "editing": editing} | tojson }}</script>
+{% endblock %}
+{% block scripts %}<script src="/static/js/wizard.js"></script>{% endblock %}

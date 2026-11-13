@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}{{ rec.name }} · {{ app_name }}{% endblock %}
+{% block body %}
+<section class="hero row between">
+  <div><h1>{{ rec.name }}</h1><span class="pill">{{ 'OpenAI Codex' if rec.tool == 'codex' else 'Claude Code' }}</span></div>
+  <div class="row">
+    <a class="btn ghost" href="/wizard?edit={{ rec.id }}">Edit answers</a>
+    <button class="btn" id="copy-prompt" type="button">Copy prompt</button>
+    <a class="btn ghost" href="/api/v1/prompts/{{ rec.id }}/download?file=prompt">Download .md</a>
+  </div>
+</section>
+<pre id="prompt-text">{{ rec.prompt_md }}</pre>
+<h2>{{ ctx_name }}</h2>
+<p class="muted">Put this file in the project root next to the prompt so {{ 'Codex' if rec.tool == 'codex' else 'Claude Code' }} keeps the rules in context.</p>
+<div class="row" style="margin-bottom:8px">
+  <button class="btn ghost sm" id="copy-context" type="button">Copy {{ ctx_name }}</button>
+  <a class="btn ghost sm" href="/api/v1/prompts/{{ rec.id }}/download?file=context">Download {{ ctx_name }}</a>
+</div>
+<pre id="context-text">{{ rec.context_md }}</pre>
+{% endblock %}

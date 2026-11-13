@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Settings · {{ app_name }}{% endblock %}
+{% block body %}
+<section class="hero"><h1>Settings</h1></section>
+<div class="grid">
+
+<section class="card"><h2 style="margin-top:0">Appearance</h2>
+  <p class="muted small">Theme and font are also in the header. They are saved to your account.</p>
+  <div class="row">
+    <div><label class="f" for="s-theme">Theme</label><select id="s-theme" data-appearance="theme">{% for k, v in THEMES.items() %}<option value="{{ k }}" {{ 'selected' if k == theme }}>{{ v }}</option>{% endfor %}</select></div>
+    <div><label class="f" for="s-font">Font</label><select id="s-font" data-appearance="font">{% for k, v in FONTS.items() %}<option value="{{ k }}" {{ 'selected' if k == font }}>{{ v[0] }}</option>{% endfor %}</select></div>
+  </div>
+  <p><a class="btn ghost sm" href="/account/password">Change password</a></p>
+</section>
+
+<section class="card"><h2 style="margin-top:0">OpenAI (logo generator)</h2>
+  <p class="muted small">Used only to generate app logos. The key is stored encrypted in the data volume. The environment variable <code>OPENAI_API_KEY</code> takes precedence.</p>
+  <p>Status: <span class="pill {{ 'ok' if openai_set else 'bad' }}" id="key-status">{{ ('configured' + (' (from environment)' if openai_env else '')) if openai_set else 'not configured' }}</span></p>
+  <div class="row"><input id="openai-key" type="password" autocomplete="off" placeholder="sk-..." style="max-width:380px" {{ 'disabled' if openai_env }}>
+  <button class="btn sm" id="save-key" {{ 'disabled' if openai_env }}>Save key</button>
+  <button class="btn ghost sm" id="clear-key" {{ 'disabled' if openai_env }}>Remove key</button></div>
+</section>
+
+<section class="card"><h2 style="margin-top:0">API tokens (Hermes Agent and other clients)</h2>
+  <p class="muted small">Send <code>Authorization: Bearer &lt;token&gt;</code> to <code>/api/v1</code>. A token is shown once. See the <a href="/api/docs">API page</a>.</p>
+  <div class="row"><input id="tok-name" type="text" placeholder="Name, e.g. Hermes Agent" style="max-width:260px">
+    <select id="tok-scope"><option value="write">read + write</option><option value="read">read only</option></select>
+    <button class="btn sm" id="tok-create">Create token</button></div>
+  <div id="tok-new" class="alert ok hidden"></div>
+  <table style="margin-top:10px"><thead><tr><th>Name</th><th>Scope</th><th>Created</th><th>Last used</th><th></th></tr></thead><tbody id="tok-list"></tbody></table>
+</section>
+
+<section class="card"><h2 style="margin-top:0">Backups</h2>
+  <p class="muted small">Backups are written to <code>/app/data/backup</code> (on Unraid: <code>/mnt/user/appdata/dockerappblueprint/data/backup</code>).</p>
+  <div class="row">
+    <label class="row"><input type="checkbox" id="bk-enabled" style="width:auto"> Automatic backups</label>
+    <select id="bk-schedule"><option value="daily">daily</option><option value="weekly">weekly</option></select>
+    <label class="row">keep <input id="bk-keep" type="number" min="1" max="90" style="width:80px"></label>
+    <button class="btn sm" id="bk-save">Save</button>
+  </div>
+  <div class="row" style="margin:12px 0">
+    <button class="btn ghost sm" id="bk-now">Back up now</button>
+    <label class="btn ghost sm" for="bk-file">Import / restore…</label><input id="bk-file" type="file" accept=".zip" class="hidden">
+  </div>
+  <table><thead><tr><th>File</th><th>Size</th><th>Created</th><th></th></tr></thead><tbody id="bk-list"></tbody></table>
+</section>
+
+<section class="card"><h2 style="margin-top:0">Wizard defaults</h2>
+  <p class="muted small">New prompts start with these answers.</p>
+  <div class="grid two" id="defaults" data-defaults='{{ defaults | tojson | forceescape }}'>
+    <div><label class="f" for="d-tool">Tool</label><select id="d-tool"><option value="claude">Claude Code</option><option value="codex">OpenAI Codex</option></select></div>
+    <div><label class="f" for="d-weight">Weight</label><select id="d-weight"><option>lightweight</option><option>balanced</option><option>feature-rich</option></select></div>
+    <div><label class="f" for="d-design">Visual design</label><select id="d-design"><option>minimal</option><option>balanced</option><option>premium</option></select></div>
+    <div><label class="f" for="d-user_mode">Users</label><select id="d-user_mode"><option value="single">single-user</option><option value="multi">multi-user</option></select></div>
+    <div><label class="f" for="d-github_owner">GitHub account</label><input id="d-github_owner" type="text"></div>
+    <div><label class="f" for="d-backup_schedule">Backup schedule</label><select id="d-backup_schedule"><option>daily</option><option>weekly</option></select></div>
+  </div>
+  <div class="row" style="margin-top:10px">
+    <label class="row"><input type="checkbox" id="d-backup" style="width:auto"> backups</label>
+    <label class="row"><input type="checkbox" id="d-staging" style="width:auto"> staging</label>
+    <label class="row"><input type="checkbox" id="d-hermes" style="width:auto"> Hermes Agent</label>
+    <label class="row"><input type="checkbox" id="d-api_managed" style="width:auto"> API management</label>
+  </div>
+  <p><button class="btn sm" id="d-save">Save defaults</button></p>
+</section>
+</div>
+{% endblock %}
+{% block scripts %}<script src="/static/js/settings.js"></script>{% endblock %}

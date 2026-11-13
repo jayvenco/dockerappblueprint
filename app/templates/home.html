@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block body %}
+<section class="hero row between">
+  <div><h1>Build prompts</h1><p class="muted">Answer a few questions, get a ready-to-paste prompt for Claude Code or OpenAI Codex.</p></div>
+  <a class="btn" href="/wizard">New prompt</a>
+</section>
+{% if request.query_params.get('pw') %}<div class="alert ok">Password changed.</div>{% endif %}
+<div class="card">
+{% if prompts %}
+<table>
+  <thead><tr><th>Name</th><th>Tool</th><th>Updated</th><th></th></tr></thead>
+  <tbody>
+  {% for p in prompts %}
+  <tr>
+    <td><a href="/prompts/{{ p.id }}"><b>{{ p.name }}</b></a></td>
+    <td><span class="pill">{{ 'Codex' if p.tool == 'codex' else 'Claude Code' }}</span></td>
+    <td class="muted small">{{ p.updated_at.strftime('%Y-%m-%d %H:%M') }}</td>
+    <td class="row" style="justify-content:flex-end">
+      <a class="btn ghost sm" href="/wizard?edit={{ p.id }}">Edit</a>
+      <a class="btn ghost sm" href="/wizard?duplicate={{ p.id }}">Duplicate</a>
+      <button class="btn ghost sm" data-delete-prompt="{{ p.id }}">Delete</button>
+    </td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>No prompts yet. <a href="/wizard">Create your first one</a>.</p>
+{% endif %}
+</div>
+<div class="row" style="margin-top:14px">
+  <a class="btn ghost sm" href="/api/v1/prompts/export" download="dockerappblueprint-prompts.json">Export all (JSON)</a>
+  <label class="btn ghost sm" for="imp">Import (JSON)</label><input id="imp" type="file" accept=".json,application/json" class="hidden" data-import-prompts>
+</div>
+{% endblock %}
